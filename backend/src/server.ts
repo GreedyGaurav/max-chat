@@ -11,9 +11,21 @@ import authRoutes from "./routes/auth.routes.js";
 const app = express();
 connectDB();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://max-chat20.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -24,7 +36,6 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/ai/stream", aiStreamRoutes);
-
 
 app.get("/", (_req, res) => {
   res.send("Backend running 🔥");
