@@ -122,14 +122,11 @@ export default function ChatWindow({ activeChatId }: Props) {
 
       {/* Message Area */}
       <div className="relative flex-1 overflow-hidden">
-        {/* Subtle texture fade from top to bottom */}
-        <div className="absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-white to-transparent opacity-60 pointer-events-none" />
-
         <MessageList messages={messages} loading={loading} />
       </div>
 
       {/* Floating-look Input Wrapper */}
-      <div className="relative z-20">
+      <div className="relative z-20 shrink-0 bg-white border-t border-slate-100/50">
         <ChatInput
           chatId={activeChatId}
           onSend={setMessages}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import MessageBubble from "./MessageBubble";
 import { Message } from "@/lib/types";
 
@@ -11,21 +11,153 @@ type Props = {
 
 export default function MessageList({ messages, loading }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastMessageCountRef = useRef(0);
+  const lastContentLengthRef = useRef(0);
+  const lastScrollTopRef = useRef(0);
+  const isScrollingRef = useRef(false);
 
-  // Optimized smooth scroll
+  // Check if user is near the bottom of the scroll container
+  const isNearBottom = useCallback(() => {
+    if (!containerRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    const threshold = 150; // pixels from bottom
+    return scrollHeight - scrollTop - clientHeight < threshold;
+  }, []);
+
+  // Scroll to bottom function
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth", force: boolean = false) => {
+    if (containerRef.current && (shouldAutoScroll || force)) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior,
+      });
+    }
+  }, [shouldAutoScroll]);
+
+  // Handle user scroll - detect if user manually scrolled up
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 150;
+    
+    // Initialize lastScrollTop if not set
+    if (lastScrollTopRef.current === 0 && scrollTop > 0) {
+      lastScrollTopRef.current = scrollTop;
+    }
+    
+    // Detect if user scrolled up (scrollTop decreased) - but only if we have a previous value
+    if (lastScrollTopRef.current > 0 && scrollTop < lastScrollTopRef.current && !isAtBottom) {
+      // User scrolled up and is not at bottom - disable auto-scroll
+      setShouldAutoScroll(false);
+      isScrollingRef.current = true;
+    } else if (isAtBottom) {
+      // User is at bottom - re-enable auto-scroll
+      setShouldAutoScroll(true);
+      isScrollingRef.current = false;
+    }
+
+    lastScrollTopRef.current = scrollTop;
+
+    // Clear scrolling flag after user stops scrolling
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+      // If user stopped scrolling and is at bottom, enable auto-scroll
+      if (isNearBottom()) {
+        setShouldAutoScroll(true);
+      }
+    }, 200);
+  }, [isNearBottom]);
+
+  // Auto-scroll when messages change or during streaming - only if user hasn't scrolled up
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-    return () => clearTimeout(timeoutId);
-  }, [messages, loading]);
+    if (shouldAutoScroll && messages.length > 0 && !isScrollingRef.current) {
+      // Use immediate scroll for streaming updates, smooth for new messages
+      const isStreaming = loading && messages[messages.length - 1]?.role === "assistant";
+      const behavior = isStreaming ? "auto" : "smooth";
+      
+      // Small delay to ensure DOM is updated
+      const timeoutId = setTimeout(() => {
+        if (containerRef.current && shouldAutoScroll) {
+          scrollToBottom(behavior);
+        }
+      }, isStreaming ? 10 : 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [messages, loading, shouldAutoScroll, scrollToBottom]);
+
+  // Detect content changes during streaming (for continuous scrolling)
+  useEffect(() => {
+    if (loading && messages.length > 0 && shouldAutoScroll && !isScrollingRef.current) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.role === "assistant") {
+        const currentContentLength = lastMessage.content.length;
+        
+        // If content is being streamed and user is at bottom, auto-scroll
+        if (currentContentLength > lastContentLengthRef.current && isNearBottom()) {
+          // Use requestAnimationFrame for smooth scrolling during streaming
+          requestAnimationFrame(() => {
+            if (containerRef.current && shouldAutoScroll) {
+              scrollToBottom("auto");
+            }
+          });
+        }
+        
+        lastContentLengthRef.current = currentContentLength;
+      }
+    } else {
+      lastContentLengthRef.current = 0;
+    }
+  }, [messages, loading, isNearBottom, shouldAutoScroll, scrollToBottom]);
+
+  // Reset scroll state when messages are cleared or chat changes
+  useEffect(() => {
+    if (messages.length < lastMessageCountRef.current) {
+      setShouldAutoScroll(true);
+      isScrollingRef.current = false;
+      scrollToBottom("auto", true);
+    }
+    lastMessageCountRef.current = messages.length;
+  }, [messages.length, scrollToBottom]);
+
+  // Initial scroll when messages are first loaded
+  useEffect(() => {
+    if (messages.length > 0 && containerRef.current && lastMessageCountRef.current === 0) {
+      setShouldAutoScroll(true);
+      // Small delay to ensure layout is complete
+      const timeoutId = setTimeout(() => {
+        scrollToBottom("auto", true);
+      }, 150);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [messages.length, scrollToBottom]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className="relative flex-1 overflow-y-auto scroll-smooth px-4 py-6 md:px-6 lg:py-10 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-      {/* Top Gradient Blur - Creates a high-end "fade-out" effect for scrolled messages */}
-      <div className="pointer-events-none sticky top-0 z-10 h-10 w-full bg-gradient-to-b from-white via-white/80 to-transparent" />
+    <div 
+      ref={containerRef}
+      onScroll={handleScroll}
+      className="absolute inset-0 overflow-y-auto scroll-smooth px-4 py-6 md:px-6 lg:py-10 pb-32 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent"
+    >
+      {/* Top Gradient Blur - Only shows when scrolled down (removed to prevent overlap) */}
 
-      <div className="mx-auto max-w-3xl space-y-8 pb-12">
+      <div className="mx-auto max-w-3xl space-y-8 pb-32">
         {messages.length === 0 ? (
           <div className="flex min-h-[400px] flex-col items-center justify-center py-20">
             <div className="relative mb-6">

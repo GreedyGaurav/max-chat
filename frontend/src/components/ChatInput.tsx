@@ -55,8 +55,14 @@ export default function ChatInput({
 
     try {
       const token = localStorage.getItem("token");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      
+      if (!apiUrl) {
+        throw new Error("API URL is not configured. Please set NEXT_PUBLIC_API_URL in your environment variables.");
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/ai/stream`,
+        `${apiUrl}/api/ai/stream`,
         {
           method: "POST",
           headers: {
@@ -67,6 +73,11 @@ export default function ChatInput({
           signal: controller.signal,
         }
       );
+
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => "Unknown error");
+        throw new Error(`API error: ${res.status} ${res.statusText} - ${errorText}`);
+      }
 
       if (!res.body) throw new Error("No stream");
       const reader = res.body.getReader();
@@ -93,10 +104,12 @@ export default function ChatInput({
       }
     } catch (err: any) {
       if (err.name !== "AbortError") {
+        console.error("Error sending message:", err);
+        const errorMessage = err.message || "⚠️ Error generating response";
         onSend((prev) =>
           prev.map((msg, i) =>
             i === assistantIndex
-              ? { ...msg, content: "⚠️ Error generating response" }
+              ? { ...msg, content: errorMessage }
               : msg
           )
         );
