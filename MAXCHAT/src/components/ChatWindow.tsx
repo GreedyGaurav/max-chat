@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
 import { Message } from "@/lib/types";
@@ -15,21 +15,24 @@ export default function ChatWindow({ activeChatId }: Props) {
   const [loading, setLoading] = useState(false);
   const [chatTitle, setChatTitle] = useState<string>("");
 
-  const fetchChatTitle = async () => {
+  const fetchChatTitle = useCallback(async () => {
     if (!activeChatId) return;
     try {
       const res = await apiFetch("/api/chats");
       const data = await res.json();
       const chats = Array.isArray(data.chats) ? data.chats : [];
-      const chat = chats.find((c: any) => c._id === activeChatId);
+      const chat = chats.find(
+        (c: { _id: string; title?: string }) => c._id === activeChatId
+      );
       setChatTitle(chat?.title || "Untitled Chat");
     } catch {
       setChatTitle("Untitled Chat");
     }
-  };
+  }, [activeChatId]);
 
   useEffect(() => {
     if (!activeChatId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMessages([]);
       setChatTitle("");
       return;
@@ -43,17 +46,16 @@ export default function ChatWindow({ activeChatId }: Props) {
       .catch(() => setMessages([]));
 
     fetchChatTitle();
-  }, [activeChatId]);
+  }, [activeChatId, fetchChatTitle]);
 
   useEffect(() => {
     window.addEventListener("refresh-chats", fetchChatTitle);
     return () => window.removeEventListener("refresh-chats", fetchChatTitle);
-  }, [activeChatId]);
+  }, [fetchChatTitle]);
 
   if (!activeChatId) {
     return (
       <div className="flex h-full w-full flex-1 flex-col items-center justify-center bg-[#fafafa] px-6 text-center">
-        {/* Decorative background element for the empty state */}
         <div className="absolute inset-0 z-0 opacity-40 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
         <div className="relative z-10 max-w-sm">
@@ -69,15 +71,15 @@ export default function ChatWindow({ activeChatId }: Props) {
             Start a new conversation
           </h2>
           <p className="mb-8 text-sm font-medium leading-relaxed text-slate-500">
-            Select an existing chat from the sidebar or click "New Conversation"
-            to begin your journey with Gemini AI.
+            Select an existing chat from the sidebar or click &ldquo;New
+            Conversation&rdquo; to begin your journey with Gemini AI.
           </p>
           <div className="grid grid-cols-2 gap-3 text-left">
             <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-400">
-              "Explain quantum physics to me like I'm five..."
+              &ldquo;Explain quantum physics to me like I&apos;m five...&rdquo;
             </div>
             <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-400">
-              "Write a clean Next.js component for a..."
+              &ldquo;Write a clean Next.js component for a...&rdquo;
             </div>
           </div>
         </div>
@@ -87,16 +89,10 @@ export default function ChatWindow({ activeChatId }: Props) {
 
   return (
     <section className="relative flex h-full flex-1 flex-col overflow-hidden bg-transparent">
-      {/* Dynamic Header */}
       <header className="z-20 flex h-[64px] shrink-0 items-center justify-between border-b border-slate-200/60 bg-white/80 px-6 backdrop-blur-xl">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -120,12 +116,10 @@ export default function ChatWindow({ activeChatId }: Props) {
         </div>
       </header>
 
-      {/* Message Area */}
       <div className="relative flex-1 overflow-hidden">
         <MessageList messages={messages} loading={loading} />
       </div>
 
-      {/* Floating-look Input Wrapper */}
       <div className="relative z-20 shrink-0 bg-white border-t border-slate-100/50">
         <ChatInput
           chatId={activeChatId}

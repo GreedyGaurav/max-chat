@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
@@ -25,7 +25,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
   const [chats, setChats] = useState<Chat[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  const fetchChats = async () => {
+  const fetchChats = useCallback(async () => {
     try {
       const res = await apiFetch("/api/chats");
       if (res.status === 401) { router.push("/login"); return; }
@@ -34,20 +34,21 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
     } catch {
       setChats([]);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchChats();
     fetch("/api/auth/me")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => { if (data?.user) setUser(data.user); })
       .catch(() => {});
-  }, []);
+  }, [fetchChats]);
 
   useEffect(() => {
     window.addEventListener("refresh-chats", fetchChats);
     return () => window.removeEventListener("refresh-chats", fetchChats);
-  }, []);
+  }, [fetchChats]);
 
   useEffect(() => {
     if (!activeChatId && chats.length > 0) {

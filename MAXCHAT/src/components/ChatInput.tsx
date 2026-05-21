@@ -21,7 +21,6 @@ export default function ChatInput({
   const abortRef = useRef<AbortController | null>(null);
   const cancelTypingRef = useRef(false);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -54,18 +53,12 @@ export default function ChatInput({
     cancelTypingRef.current = false;
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch('/api/ai/stream', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: JSON.stringify({ chatId, message: userMessage }),
-          signal: controller.signal,
-        }
-      );
+      const res = await fetch("/api/ai/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId, message: userMessage }),
+        signal: controller.signal,
+      });
 
       if (!res.ok) {
         const errorText = await res.text().catch(() => "Unknown error");
@@ -92,18 +85,16 @@ export default function ChatInput({
                 : msg
             )
           );
-          await new Promise((r) => setTimeout(r, 12)); // Slightly faster for snappier feel
+          await new Promise((r) => setTimeout(r, 12));
         }
       }
-    } catch (err: any) {
-      if (err.name !== "AbortError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== "AbortError") {
         console.error("Error sending message:", err);
         const errorMessage = err.message || "⚠️ Error generating response";
         onSend((prev) =>
           prev.map((msg, i) =>
-            i === assistantIndex
-              ? { ...msg, content: errorMessage }
-              : msg
+            i === assistantIndex ? { ...msg, content: errorMessage } : msg
           )
         );
       }
@@ -123,7 +114,6 @@ export default function ChatInput({
     <div className="bg-transparent px-4 pb-6 pt-2 lg:px-8">
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
         <div className="relative flex flex-col w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all focus-within:border-blue-400 focus-within:shadow-[0_8px_30px_rgb(37,99,235,0.06)]">
-          {/* Top Bar Decoration (Recruiters love these tiny details) */}
           <div className="flex items-center gap-1.5 px-4 pt-3">
             <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
             <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
@@ -156,18 +146,8 @@ export default function ChatInput({
                   disabled={!text.trim()}
                   className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 hover:scale-105 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:scale-100 active:scale-95"
                 >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M5 12h14M12 5l7 7-7 7"
-                    />
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </button>
               ) : (
@@ -182,22 +162,13 @@ export default function ChatInput({
             </div>
           </div>
 
-          {/* Bottom Hint */}
           <div className="bg-slate-50/50 px-4 py-2 border-t border-slate-100/50 flex justify-between items-center">
             <span className="text-[10px] font-medium text-slate-400">
               Shift + Enter for new line
             </span>
             <div className="flex gap-3">
-              <button
-                type="button"
-                className="text-slate-400 hover:text-blue-600 transition-colors"
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+              <button type="button" className="text-slate-400 hover:text-blue-600 transition-colors">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

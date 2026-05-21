@@ -121,6 +121,7 @@ export default function MessageList({ messages, loading }: Props) {
   // Reset scroll state when messages are cleared or chat changes
   useEffect(() => {
     if (messages.length < lastMessageCountRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldAutoScroll(true);
       isScrollingRef.current = false;
       scrollToBottom("auto", true);
@@ -131,6 +132,7 @@ export default function MessageList({ messages, loading }: Props) {
   // Initial scroll when messages are first loaded
   useEffect(() => {
     if (messages.length > 0 && containerRef.current && lastMessageCountRef.current === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldAutoScroll(true);
       // Small delay to ensure layout is complete
       const timeoutId = setTimeout(() => {
