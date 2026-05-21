@@ -19,7 +19,7 @@ export default function LoginPage() {
   }, [router]);
 
   const handleGoogleSuccess = async (googleToken: string) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+    const res = await fetch('/api/auth/google', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: googleToken }),

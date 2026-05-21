@@ -55,15 +55,8 @@ export default function ChatInput({
 
     try {
       const token = localStorage.getItem("token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      
-      if (!apiUrl) {
-        throw new Error("API URL is not configured. Please set NEXT_PUBLIC_API_URL in your environment variables.");
-      }
 
-      const res = await fetch(
-        `${apiUrl}/api/ai/stream`,
-        {
+      const res = await fetch('/api/ai/stream', {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
