@@ -40,7 +40,7 @@ export default function LandingPage() {
         <div className="absolute -top-[5%] -left-[10%] h-[30%] w-[50%] rounded-full bg-blue-100/40 blur-[80px] sm:blur-[120px]" />
         <div className="absolute top-[10%] -right-[10%] h-[30%] w-[50%] rounded-full bg-indigo-100/30 blur-[80px] sm:blur-[120px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 brightness-100 contrast-150"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] sm:bg-[size:44px_44px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-size-[32px_32px] sm:bg-size-[44px_44px]"></div>
       </div>
 
       {/* Header */}
@@ -48,7 +48,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 sm:h-20 items-center justify-between">
             <div className="flex items-center gap-2 group cursor-pointer">
-              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-linear-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20">
                 <span className="text-lg sm:text-xl font-bold text-white">
                   M
                 </span>
@@ -210,8 +210,8 @@ export default function LandingPage() {
 
         {/* CTA Section */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
-          <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-slate-900 px-6 py-16 sm:px-8 sm:py-20 text-center shadow-2xl">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+          <div className="relative overflow-hidden rounded-4xl sm:rounded-[3rem] bg-slate-900 px-6 py-16 sm:px-8 sm:py-20 text-center shadow-2xl">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[20px_20px]"></div>
             <div className="relative z-10">
               <h2 className="mb-4 sm:mb-6 text-3xl font-bold text-white sm:text-5xl">
                 Build your ideas today.

@@ -161,7 +161,7 @@ export default function MessageList({ messages, loading }: Props) {
 
       <div className="mx-auto max-w-3xl space-y-8 pb-32">
         {messages.length === 0 ? (
-          <div className="flex min-h-[400px] flex-col items-center justify-center py-20">
+          <div className="flex min-h-100 flex-col items-center justify-center py-20">
             <div className="relative mb-6">
               <div className="absolute inset-0 animate-pulse rounded-full bg-blue-50 blur-xl"></div>
               <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 shadow-sm text-slate-300">

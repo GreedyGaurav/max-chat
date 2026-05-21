@@ -135,11 +135,11 @@ export default function ChatInput({
               }}
               placeholder="Ask Max Chat anything..."
               rows={1}
-              className="flex-1 max-h-[200px] min-h-[44px] resize-none border-0 bg-transparent py-3 text-sm font-medium leading-relaxed text-slate-900 placeholder-slate-400 outline-none focus:ring-0"
+              className="flex-1 max-h-50 min-h-11 resize-none border-0 bg-transparent py-3 text-sm font-medium leading-relaxed text-slate-900 placeholder-slate-400 outline-none focus:ring-0"
               disabled={loading}
             />
 
-            <div className="flex h-[44px] items-center pb-1">
+            <div className="flex h-11 items-center pb-1">
               {!loading ? (
                 <button
                   type="submit"

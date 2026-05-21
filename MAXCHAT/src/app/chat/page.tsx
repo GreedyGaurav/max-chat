@@ -14,7 +14,7 @@ export default function ChatPage() {
       {/* SIDEBAR - Fixed width on desktop, Drawer on mobile */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-[280px] transform border-r border-slate-200 bg-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+          fixed inset-y-0 left-0 z-50 w-70 transform border-r border-slate-200 bg-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
@@ -54,7 +54,7 @@ export default function ChatPage() {
 
         {/* CHAT WINDOW CONTAINER */}
         <div className="relative flex-1 overflow-hidden">
-          <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+          <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-size-[40px_40px]"></div>
           <div className="relative z-10 h-full w-full">
             <ChatWindow activeChatId={activeChatId} />
           </div>

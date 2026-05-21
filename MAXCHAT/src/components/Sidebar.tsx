@@ -206,7 +206,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
               className="h-8 w-8 rounded-full border border-slate-200 object-cover"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+            <div className="h-8 w-8 rounded-full bg-linear-to-tr from-blue-100 to-indigo-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
               {initials}
             </div>
           )}
