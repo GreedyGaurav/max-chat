@@ -48,15 +48,15 @@ export default function LoginPage() {
         <div className="absolute top-[10%] left-[10%] h-[40%] w-[40%] rounded-full bg-blue-100/50 blur-[120px]" />
         <div className="absolute bottom-[10%] right-[10%] h-[40%] w-[40%] rounded-full bg-indigo-100/40 blur-[120px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-size-[44px_44px]"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-[420px]">
+      <div className="relative z-10 w-full max-w-105">
         {/* Logo and Branding */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-block group">
             <div className="mb-4 flex justify-center transition-transform group-hover:scale-110">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-2xl font-bold text-white shadow-xl shadow-blue-500/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-blue-600 to-indigo-600 text-2xl font-bold text-white shadow-xl shadow-blue-500/20">
                 M
               </div>
             </div>
