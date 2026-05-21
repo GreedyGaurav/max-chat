@@ -2,22 +2,19 @@
 
 import { GoogleLogin } from "@react-oauth/google";
 
-export default function GoogleLoginButton({
-  onSuccess,
-}: {
+type Props = {
   onSuccess: (token: string) => void;
-}) {
+  onError?: () => void;
+};
+
+export default function GoogleLoginButton({ onSuccess, onError }: Props) {
   return (
     <div className="w-full">
       <GoogleLogin
         onSuccess={(res) => {
-          if (res.credential) {
-            onSuccess(res.credential);
-          }
+          if (res.credential) onSuccess(res.credential);
         }}
-        onError={() => {
-          alert("Google login failed");
-        }}
+        onError={onError}
         useOneTap={false}
         theme="outline"
         size="large"

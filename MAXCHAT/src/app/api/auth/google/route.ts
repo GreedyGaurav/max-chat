@@ -38,8 +38,21 @@ export async function POST(req: NextRequest) {
       { expiresIn: '7d' }
     );
 
-    return NextResponse.json({ token: jwtToken });
+    const res = NextResponse.json({
+      ok: true,
+      user: { name: user.name, email: user.email, avatar: user.avatar },
+    });
+
+    res.cookies.set('auth-token', jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    return res;
   } catch {
-    return NextResponse.json({ message: 'Authentication failed' }, { status: 401 });
+    return NextResponse.json({ message: 'Authentication failed' }, { status: 500 });
   }
 }

@@ -6,10 +6,8 @@ interface JwtPayload {
 }
 
 export function getAuthUserId(req: NextRequest): string | null {
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.split(' ')[1];
+  const token = req.cookies.get('auth-token')?.value;
+  if (!token) return null;
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     return decoded.userId;

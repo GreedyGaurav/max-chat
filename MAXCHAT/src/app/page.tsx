@@ -9,8 +9,9 @@ export default function LandingPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
+    fetch("/api/auth/me")
+      .then((res) => setIsAuthenticated(res.ok))
+      .catch(() => setIsAuthenticated(false));
   }, []);
 
   const handleCTAClick = () => {

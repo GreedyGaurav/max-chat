@@ -9,6 +9,12 @@ type Chat = {
   title?: string;
 };
 
+type User = {
+  name?: string;
+  email: string;
+  avatar?: string;
+};
+
 type Props = {
   activeChatId: string | null;
   setActiveChatId: (id: string | null) => void;
@@ -17,10 +23,12 @@ type Props = {
 export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
   const router = useRouter();
   const [chats, setChats] = useState<Chat[]>([]);
+  const [user, setUser] = useState<User | null>(null);
 
   const fetchChats = async () => {
     try {
       const res = await apiFetch("/api/chats");
+      if (res.status === 401) { router.push("/login"); return; }
       const data = await res.json();
       setChats(Array.isArray(data.chats) ? data.chats : []);
     } catch {
@@ -30,6 +38,10 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
 
   useEffect(() => {
     fetchChats();
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => { if (data?.user) setUser(data.user); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -48,10 +60,8 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
       method: "POST",
       body: JSON.stringify({ title: "New Chat" }),
     });
-
     const chat = await res.json();
     if (!chat?._id) return;
-
     setChats((prev) => [chat, ...prev]);
     setActiveChatId(chat._id);
   };
@@ -63,10 +73,14 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
     if (activeChatId === chatId) setActiveChatId(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
   };
+
+  const initials = user?.name
+    ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "U";
 
   return (
     <aside className="flex h-full w-full flex-col bg-white">
@@ -77,16 +91,13 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
             <span className="text-xl font-bold text-white">M</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold tracking-tight text-slate-900">
-              Max Chat
-            </span>
+            <span className="text-sm font-bold tracking-tight text-slate-900">Max Chat</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600/60">
               Pro Workspace
             </span>
           </div>
         </div>
 
-        {/* Action Button */}
         <button
           onClick={createNewChat}
           className="group flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200 active:scale-95"
@@ -97,12 +108,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M12 4v16m8-8H4"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
           </svg>
           New Conversation
         </button>
@@ -121,12 +127,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
           {chats.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
               <div className="mb-3 rounded-full bg-slate-50 p-3 text-slate-300">
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -150,16 +151,13 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                {/* Active Indicator Dot */}
                 {activeChatId === chat._id && (
                   <div className="absolute left-1 h-5 w-1 rounded-full bg-blue-600" />
                 )}
 
                 <svg
                   className={`mr-3 h-4 w-4 shrink-0 transition-colors ${
-                    activeChatId === chat._id
-                      ? "text-blue-600"
-                      : "text-slate-400"
+                    activeChatId === chat._id ? "text-blue-600" : "text-slate-400"
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -181,12 +179,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
                   onClick={(e) => deleteChat(chat._id, e)}
                   className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
                 >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -204,12 +197,21 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
       {/* User & Settings Footer */}
       <div className="border-t border-slate-100 p-4">
         <div className="mb-4 flex items-center gap-3 px-2 py-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
-            User
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-slate-900">
-              Active Session
+          {user?.avatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.avatar}
+              alt={user.name ?? "User"}
+              className="h-8 w-8 rounded-full border border-slate-200 object-cover"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+              {initials}
+            </div>
+          )}
+          <div className="flex flex-col min-w-0">
+            <span className="truncate text-xs font-bold text-slate-900">
+              {user?.name ?? user?.email ?? "Loading…"}
             </span>
             <span className="text-[10px] font-medium text-green-500 flex items-center gap-1">
               <span className="h-1 w-1 rounded-full bg-green-500 animate-pulse" />
@@ -222,12 +224,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 transition-all hover:bg-red-50 hover:text-red-600"
         >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
