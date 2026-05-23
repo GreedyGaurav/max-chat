@@ -101,6 +101,9 @@ export default function ChatInput({
     } finally {
       setLoading(false);
       abortRef.current = null;
+      // Refresh sidebar + chat header title now that the server has saved the message
+      // and may have auto-titled the chat (happens on the first message)
+      window.dispatchEvent(new Event("refresh-chats"));
     }
   };
 
@@ -113,11 +116,11 @@ export default function ChatInput({
   return (
     <div className="bg-transparent px-4 pb-6 pt-2 lg:px-8">
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
-        <div className="relative flex flex-col w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all focus-within:border-blue-400 focus-within:shadow-[0_8px_30px_rgb(37,99,235,0.06)]">
+        <div className="relative flex flex-col w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all focus-within:border-blue-400 focus-within:shadow-[0_8px_30px_rgb(37,99,235,0.06)] dark:border-slate-700 dark:bg-slate-800 dark:shadow-none dark:focus-within:border-blue-500">
           <div className="flex items-center gap-1.5 px-4 pt-3">
-            <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
-            <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
+            <div className="h-1.5 w-1.5 rounded-full bg-slate-200 dark:bg-slate-600" />
+            <div className="h-1.5 w-1.5 rounded-full bg-slate-200 dark:bg-slate-600" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1 dark:text-slate-500">
               Gemini AI
             </span>
           </div>
@@ -135,7 +138,7 @@ export default function ChatInput({
               }}
               placeholder="Ask Max Chat anything..."
               rows={1}
-              className="flex-1 max-h-50 min-h-11 resize-none border-0 bg-transparent py-3 text-sm font-medium leading-relaxed text-slate-900 placeholder-slate-400 outline-none focus:ring-0"
+              className="flex-1 max-h-50 min-h-11 resize-none border-0 bg-transparent py-3 text-sm font-medium leading-relaxed text-slate-900 placeholder-slate-400 outline-none focus:ring-0 dark:text-slate-100 dark:placeholder-slate-500"
               disabled={loading}
             />
 
@@ -144,7 +147,7 @@ export default function ChatInput({
                 <button
                   type="submit"
                   disabled={!text.trim()}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 hover:scale-105 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:scale-100 active:scale-95"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 hover:scale-105 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:scale-100 active:scale-95 dark:shadow-blue-900/30 dark:disabled:bg-slate-700 dark:disabled:text-slate-500"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M12 5l7 7-7 7" />
@@ -154,7 +157,7 @@ export default function ChatInput({
                 <button
                   type="button"
                   onClick={handleStop}
-                  className="group flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white transition-all hover:bg-red-500 active:scale-95"
+                  className="group flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white transition-all hover:bg-red-500 active:scale-95 dark:bg-slate-700 dark:hover:bg-red-500"
                 >
                   <div className="relative h-2 w-2 bg-white rounded-sm group-hover:scale-110" />
                 </button>
@@ -162,12 +165,12 @@ export default function ChatInput({
             </div>
           </div>
 
-          <div className="bg-slate-50/50 px-4 py-2 border-t border-slate-100/50 flex justify-between items-center">
-            <span className="text-[10px] font-medium text-slate-400">
+          <div className="bg-slate-50/50 px-4 py-2 border-t border-slate-100/50 flex justify-between items-center dark:bg-slate-800/50 dark:border-slate-700/30">
+            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
               Shift + Enter for new line
             </span>
             <div className="flex gap-3">
-              <button type="button" className="text-slate-400 hover:text-blue-600 transition-colors">
+              <button type="button" className="text-slate-400 hover:text-blue-600 transition-colors dark:text-slate-500 dark:hover:text-blue-400">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -181,7 +184,7 @@ export default function ChatInput({
           </div>
         </div>
 
-        <p className="mt-3 text-center text-[11px] text-slate-400">
+        <p className="mt-3 text-center text-[11px] text-slate-400 dark:text-slate-500">
           Max Chat can make mistakes. Check important info.
         </p>
       </form>

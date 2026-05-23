@@ -4,81 +4,78 @@ type Props = {
   role: "user" | "assistant";
   content: string;
   showCursor?: boolean;
+  user?: { name?: string; avatar?: string };
 };
 
 export default function MessageBubble({
   role,
   content,
   showCursor = false,
+  user,
 }: Props) {
   const isUser = role === "user";
+  const firstName = user?.name?.trim().split(/\s+/)[0] ?? "You";
 
   return (
     <div
-      className={`group flex w-full flex-col gap-2 py-4 ${
-        isUser ? "items-end" : "items-start"
-      }`}
+      className={`group flex w-full flex-col gap-1.5 py-2 ${isUser ? "items-end" : "items-start"}`}
     >
-      {/* Role Label & Avatar Row */}
-      <div
-        className={`flex items-center gap-2 px-1 ${
-          isUser ? "flex-row-reverse" : "flex-row"
-        }`}
-      >
-        <div
-          className={`flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold shadow-sm ${
-            isUser ? "bg-blue-600 text-white" : "bg-slate-900 text-white"
-          }`}
-        >
-          {isUser ? "U" : "AI"}
-        </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-          {isUser ? "You" : "Max Chat"}
-        </span>
-      </div>
+      {/* Role label */}
+      <span className="px-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+        {isUser ? firstName : "Max Chat"}
+      </span>
 
-      {/* Message Bubble */}
+      {/* Bubble */}
       <div
-        className={`relative max-w-[85%] md:max-w-[75%] px-5 py-3.5 text-sm md:text-base leading-relaxed whitespace-pre-wrap transition-all shadow-sm ${
+        className={`max-w-[85%] md:max-w-[75%] px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap wrap-break-word ${
           isUser
-            ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm"
-            : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm shadow-slate-200/50"
+            ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm shadow-sm"
+            : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm shadow-sm shadow-slate-100/80 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:shadow-slate-900"
         }`}
       >
         {content ||
           (showCursor && (
-            <span className="text-slate-400 italic text-xs">Thinking...</span>
+            <span className="text-slate-400 italic text-xs dark:text-slate-500">
+              Thinking...
+            </span>
           ))}
-
         {showCursor && (
-          <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-current align-middle rounded-full opacity-70" />
+          <span className="ml-0.5 inline-block h-3.5 w-1 animate-pulse bg-current align-middle rounded-full opacity-70" />
         )}
+      </div>
 
-        {/* Action Buttons (Visible on Hover - Recruiters love this!) */}
-        {!showCursor && (
-          <div
-            className={`absolute -bottom-8 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100 ${
-              isUser ? "right-0" : "left-0"
-            }`}
+      {/* Action buttons — inline below bubble, no absolute positioning */}
+      {!showCursor && content && (
+        <div
+          className={`flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ${
+            isUser ? "flex-row-reverse pr-1" : "pl-1"
+          }`}
+        >
+          <button
+            className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            title="Copy"
           >
-            <button className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+            <svg
+              className="h-3 w-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+              />
+            </svg>
+          </button>
+          {!isUser && (
+            <button
+              className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+              title="Regenerate"
+            >
               <svg
-                className="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                />
-              </svg>
-            </button>
-            <button className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-              <svg
-                className="h-3.5 w-3.5"
+                className="h-3 w-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -91,9 +88,9 @@ export default function MessageBubble({
                 />
               </svg>
             </button>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

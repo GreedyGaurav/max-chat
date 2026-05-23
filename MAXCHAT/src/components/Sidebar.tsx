@@ -84,16 +84,16 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
     : "U";
 
   return (
-    <aside className="flex h-full w-full flex-col bg-white">
+    <aside className="flex h-full w-full flex-col bg-white dark:bg-slate-900">
       {/* Brand Header */}
       <div className="px-6 py-8">
         <div className="flex items-center gap-3 mb-8">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-200">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
             <span className="text-xl font-bold text-white">M</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold tracking-tight text-slate-900">Max Chat</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600/60">
+            <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">Max Chat</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600/60 dark:text-blue-400/60">
               Pro Workspace
             </span>
           </div>
@@ -101,7 +101,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
 
         <button
           onClick={createNewChat}
-          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200 active:scale-95"
+          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200 active:scale-95 dark:bg-slate-700 dark:hover:bg-slate-600 dark:hover:shadow-slate-900"
         >
           <svg
             className="h-4 w-4 transition-transform group-hover:rotate-90"
@@ -117,7 +117,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
 
       {/* Navigation Label */}
       <div className="px-6 pb-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500">
           Recent Chats
         </span>
       </div>
@@ -127,7 +127,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
         <div className="space-y-1">
           {chats.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <div className="mb-3 rounded-full bg-slate-50 p-3 text-slate-300">
+              <div className="mb-3 rounded-full bg-slate-50 p-3 text-slate-300 dark:bg-slate-800 dark:text-slate-600">
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
@@ -137,7 +137,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
                   />
                 </svg>
               </div>
-              <p className="text-xs font-medium text-slate-400 leading-relaxed">
+              <p className="text-xs font-medium text-slate-400 leading-relaxed dark:text-slate-500">
                 No history yet. Start a new chat to begin.
               </p>
             </div>
@@ -148,17 +148,17 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
                 onClick={() => setActiveChatId(chat._id)}
                 className={`group relative flex cursor-pointer items-center rounded-xl px-4 py-3 transition-all duration-200 ${
                   activeChatId === chat._id
-                    ? "bg-blue-50 text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-900/30 dark:text-blue-400"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                 }`}
               >
                 {activeChatId === chat._id && (
-                  <div className="absolute left-1 h-5 w-1 rounded-full bg-blue-600" />
+                  <div className="absolute left-1 h-5 w-1 rounded-full bg-blue-600 dark:bg-blue-500" />
                 )}
 
                 <svg
                   className={`mr-3 h-4 w-4 shrink-0 transition-colors ${
-                    activeChatId === chat._id ? "text-blue-600" : "text-slate-400"
+                    activeChatId === chat._id ? "text-blue-600 dark:text-blue-500" : "text-slate-400 dark:text-slate-500"
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -178,7 +178,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
 
                 <button
                   onClick={(e) => deleteChat(chat._id, e)}
-                  className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+                  className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 dark:text-slate-500 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -196,22 +196,23 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
       </div>
 
       {/* User & Settings Footer */}
-      <div className="border-t border-slate-100 p-4">
+      <div className="border-t border-slate-100 p-4 dark:border-slate-700/50">
         <div className="mb-4 flex items-center gap-3 px-2 py-2">
           {user?.avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.avatar}
               alt={user.name ?? "User"}
-              className="h-8 w-8 rounded-full border border-slate-200 object-cover"
+              referrerPolicy="no-referrer"
+              className="h-8 w-8 rounded-full border border-slate-200 object-cover dark:border-slate-700"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-linear-to-tr from-blue-100 to-indigo-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+            <div className="h-8 w-8 rounded-full bg-linear-to-tr from-blue-100 to-indigo-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase dark:from-slate-700 dark:to-slate-700 dark:border-slate-600 dark:text-blue-400">
               {initials}
             </div>
           )}
           <div className="flex flex-col min-w-0">
-            <span className="truncate text-xs font-bold text-slate-900">
+            <span className="truncate text-xs font-bold text-slate-900 dark:text-slate-100">
               {user?.name ?? user?.email ?? "Loading…"}
             </span>
             <span className="text-[10px] font-medium text-green-500 flex items-center gap-1">
@@ -223,7 +224,7 @@ export default function Sidebar({ activeChatId, setActiveChatId }: Props) {
 
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 transition-all hover:bg-red-50 hover:text-red-600"
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 transition-all hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/30 dark:hover:text-red-400"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
